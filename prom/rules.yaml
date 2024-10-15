@@ -1,0 +1,23 @@
+groups:
+- name: zookeeper.alerts
+  rules:
+  # ==============
+  # Base JMX Rules
+  # ==============
+  - alert: ZooKeeper Missing
+    expr: up{juju_charm!=".*"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Prometheus target missing (instance {{ $labels.instance }})
+      description: "ZooKeeper target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: Ensemble Member Missing
+    expr: floor(sum(up{juju_charm!=".*"}/2) < quorum_size{juju_charm!=".*"}
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Prometheus target missing for member of the ZooKeeper ensemble  (instance {{ $labels.instance }})
+      description: "ZooKeeper ensemble member has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
